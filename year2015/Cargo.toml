@@ -1,5 +1,11 @@
 [package]
 name = "year2015"
-version = "0.1.0"
-edition = "2015"
-authors = ["Cosmin Georgescu cosmingg2013@gmail.com"]
+description = "My take on Advent of Code 2015 in Rust"
+version = "0.3.0"
+authors.workspace = true
+repository.workspace = true
+edition.workspace = true
+keywords.workspace = true
+
+[lib]
+doctest = false
