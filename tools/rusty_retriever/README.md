@@ -8,15 +8,15 @@ It only fashionably works with my suggested folder structure:
 
 ```sh
     .
-    -> tools
+    ├─ tools
+    ├─ year<n>: Workspace Member Library
+        ├─ input
+           ├─ 1.txt
+           ├─ ...
+           └─ 25.txt
         ...
-    -> year<n>: Workspace Member Library
-        -> input
-            1.txt
-            ...
-            25.txt
-    -> COOKIES.txt
-    -> src: Workspace
+    ├─ COOKIES.txt
+    └─ src: Workspace
         lib.rs
 ```
 
