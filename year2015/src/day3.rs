@@ -3,6 +3,8 @@ use std::{
     ops::Add,
 };
 
+use crate::input;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 struct Point(isize, isize);
 
@@ -27,7 +29,7 @@ impl Add for Point {
 
 fn houses_visited() -> Result<usize, std::io::Error> {
     let mut houses_visited: HashMap<Point, usize> = HashMap::new();
-    std::fs::read("day3.txt")?
+    std::fs::read(input::DAY3)?
         .iter()
         .fold(Point::default(), |position, &direction| {
             houses_visited
@@ -42,7 +44,7 @@ fn houses_visited() -> Result<usize, std::io::Error> {
 fn houses_visited_with_robosanta() -> Result<usize, std::io::Error> {
     let mut houses_visited_by_santa: HashMap<Point, usize> = HashMap::new();
     let mut houses_visited_by_robosanta: HashMap<Point, usize> = HashMap::new();
-    let directions = std::fs::read("day3.txt")?.iter().enumerate().fold(
+    let _ = std::fs::read(input::DAY3)?.iter().enumerate().fold(
         (Point::default(), Point::default()),
         |(santa_position, robosanta_position), (i, &direction)| match i % 2 == 0 {
             true => {
@@ -67,4 +69,13 @@ fn houses_visited_with_robosanta() -> Result<usize, std::io::Error> {
         .collect::<HashSet<Point>>()
         .union(&houses_visited_by_robosanta.keys().cloned().collect())
         .count())
+}
+
+#[test]
+fn solve() {
+    println!(
+        "part I : {}\npart II: {}",
+        houses_visited().unwrap(),
+        houses_visited_with_robosanta().unwrap()
+    );
 }

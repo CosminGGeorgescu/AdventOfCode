@@ -1,7 +1,9 @@
-use regex::{Match, Regex};
+use aho_corasick::{AhoCorasick, Match};
+
+use crate::input;
 
 pub fn compute_calibration_values_sum() -> Result<usize, std::io::Error> {
-    Ok(std::fs::read_to_string("src/input/day1.txt")?
+    Ok(std::fs::read_to_string(input::DAY1)?
         .split_terminator('\n')
         .collect::<Vec<&str>>()
         .iter()
@@ -17,52 +19,57 @@ pub fn compute_calibration_values_sum() -> Result<usize, std::io::Error> {
         .sum())
 }
 
-///! FIX OVERLAPPING MATCHING
-
-pub fn idk() -> Result<usize, std::io::Error> {
-    fn convert_literal_to_digit(literal: &str) -> Option<char> {
+pub fn real_calibration_values_sum() -> Result<usize, impl std::error::Error> {
+    fn convert_literal_to_digit(literal: &str) -> char {
         match literal {
-            "one" => Some('1'),
-            "two" => Some('2'),
-            "three" => Some('3'),
-            "four" => Some('4'),
-            "five" => Some('5'),
-            "six" => Some('6'),
-            "seven" => Some('7'),
-            "eight" => Some('8'),
-            "nine" => Some('9'),
-            "1" => Some('1'),
-            "2" => Some('2'),
-            "3" => Some('3'),
-            "4" => Some('4'),
-            "5" => Some('5'),
-            "6" => Some('6'),
-            "7" => Some('7'),
-            "8" => Some('8'),
-            "9" => Some('9'),
-            _ => None,
+            "one" | "1" => '1',
+            "two" | "2" => '2',
+            "three" | "3" => '3',
+            "four" | "4" => '4',
+            "five" | "5" => '5',
+            "six" | "6" => '6',
+            "seven" | "7" => '7',
+            "eight" | "8" => '8',
+            "nine" | "9" => '9',
+            _ => '\0',
         }
     }
 
-    Ok(std::fs::read_to_string("src/input/day1.txt")?
-        .split_terminator('\n')
-        .collect::<Vec<&str>>()
-        .iter()
-        .map(|&line| {
-            let pattern = Regex::new(r"(\d|one|two|three|four|five|six|seven|eight|nine)").unwrap();
-            let matches: Vec<Match> = pattern.find_iter(line).collect();
-            let first = matches
-                .first()
-                .map(|&n| convert_literal_to_digit(&line[n.start()..n.end()]).unwrap());
-            let last = matches
-                .last()
-                .map(|&n| convert_literal_to_digit(&line[n.start()..n.end()]).unwrap())
-                .or(first);
-            println!("{:?} / {:?}", first, last);
-            first
-                .zip(last)
-                .map(|(chr1, chr2)| format!("{chr1}{chr2}").parse::<usize>().unwrap())
-                .unwrap()
+    AhoCorasick::builder()
+        .ascii_case_insensitive(false)
+        .build(&[
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five",
+            "six", "seven", "eight", "nine",
+        ])
+        .map(|ac| -> Result<usize, std::io::Error> {
+            Ok(std::fs::read_to_string(input::DAY1)?
+                .split_terminator('\n')
+                .collect::<Vec<&str>>()
+                .iter()
+                .map(|&line| {
+                    let matches: Vec<Match> = ac.find_overlapping_iter(line).collect();
+                    let first = matches
+                        .first()
+                        .map(|&n| convert_literal_to_digit(&line[n.start()..n.end()]));
+                    let last = matches
+                        .last()
+                        .map(|&n| convert_literal_to_digit(&line[n.start()..n.end()]))
+                        .or(first);
+                    first
+                        .zip(last)
+                        .map(|(chr1, chr2)| format!("{chr1}{chr2}").parse::<usize>().unwrap())
+                        .unwrap()
+                })
+                .sum())
         })
-        .sum())
+        .unwrap()
+}
+
+#[test]
+fn solve() {
+    println!(
+        "part I : {}\npart II: {}",
+        compute_calibration_values_sum().unwrap(),
+        real_calibration_values_sum().unwrap()
+    );
 }

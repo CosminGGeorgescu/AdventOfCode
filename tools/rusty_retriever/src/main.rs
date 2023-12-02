@@ -34,7 +34,7 @@ fn main() {
     // UI
     // Ask the user for the year and day from which they want to get the puzzle input
     let (year, day) = (input_helper(Input::Year), input_helper(Input::Day));
-    let _ = std::fs::create_dir_all(format!("year{year}/input/"));
+    let _ = std::fs::create_dir_all(format!("year{year}/input"));
     let mut file = fs::OpenOptions::new()
         .append(true)
         .create(true)
